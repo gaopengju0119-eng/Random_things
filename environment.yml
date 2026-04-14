@@ -1,13 +1,7 @@
-name: random-things
+name: random_things
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.13.13
+  - python=3.13
   - mp-api
   - pymatgen
-  - numpy
-  - scipy
-  - matplotlib
-description: Material Project XRD Download and Analysis Tool
-version: 1.0

@@ -1,41 +1,109 @@
-# Material Project - XRD Download and Analysis
+# Materials Project XRD Export
 
 ## Overview
-This project downloads crystal structure data from the Materials Project API and calculates X-ray diffraction (XRD) patterns using PyMatGen.
+This project downloads a crystal structure from the Materials Project API and calculates its simulated X-ray diffraction (XRD) pattern with `pymatgen`.
+
+The script standardizes the structure to a conventional cell, calculates the XRD pattern, and exports the result as a CSV file that can be opened in Origin, Excel, or other analysis software.
+
+## Current Configuration
+The main settings are defined near the top of `Material_project.py`:
+
+```python
+RADIATION_SOURCE = "CuKa"
+MATERIAL_ID = "mp-2723"
+```
+
+- `MATERIAL_ID` controls which Materials Project structure is downloaded.
+- `RADIATION_SOURCE` controls the X-ray source used by `XRDCalculator`.
+- For `"CuKa"`, `pymatgen` resolves the wavelength internally as `1.54184` angstrom.
+- A custom numeric wavelength can also be passed to `XRDCalculator` if needed.
 
 ## Features
-- **Materials Project Integration**: Retrieves crystal structures by material ID using the Materials Project REST API
-- **Structure Standardization**: Converts structures to conventional standard form to ensure proper Miller indices labeling
-- **XRD Calculation**: Calculates X-ray diffraction patterns using CuKα radiation
-- **CSV Export**: Saves XRD pattern data (2θ angles, intensity, Miller indices) for import into Origin or other analysis software
+- Retrieves a crystal structure from Materials Project by material ID.
+- Converts the structure to the conventional standard cell for consistent Miller index labels.
+- Calculates a simulated XRD pattern using `pymatgen.analysis.diffraction.xrd.XRDCalculator`.
+- Uses `pattern.d_hkls` from `XRDCalculator` for d-spacing values.
+- Exports material ID, formula, radiation source, wavelength, 2theta, intensity, d-spacing, and HKL labels to CSV.
+- Names the output CSV using both the chemical formula and Materials Project ID.
 
 ## Project Structure
-```
+```text
 Random_things/
-├── Material_project.py      # Main script for XRD analysis
-├── README.md               # This file
-├── environment.yml         # Conda environment specification
-└── data/
-    └── download/          # Output directory for XRD patterns
+|-- Material_project.py
+|-- README.md
+|-- environment.yml
+`-- data/
+    `-- download/
 ```
 
-## Dependencies
-- **python**: 3.13.13
-- **mp-api**: Materials Project API client
-- **pymatgen**: Python Materials Genomics - for crystal structure analysis and XRD calculations
+## Environment Setup
+Create the conda environment from `environment.yml`:
+
+```powershell
+conda env create -f environment.yml
+```
+
+Activate the environment:
+
+```powershell
+conda activate random_things
+```
+
+If the environment already exists, update it with:
+
+```powershell
+conda env update -f environment.yml --prune
+```
 
 ## Usage
-1. Ensure conda environment is set up with dependencies
-2. Run the script: `python Material_project.py`
-3. Output XRD pattern CSV file will be saved to `data/download/`
+Run the script from the project root:
+
+```powershell
+python Material_project.py
+```
+
+Or run it without activating the environment:
+
+```powershell
+conda run -n random_things python Material_project.py
+```
+
+On Windows, if `conda run` reports a temporary-file access conflict, activate the environment first and then run `python Material_project.py`.
 
 ## Output
-The script generates a CSV file with columns:
-- `two_theta`: 2θ diffraction angle (degrees)
-- `intensity`: Relative intensity
-- `hkls`: Miller indices for the diffraction peak
+For the current configuration:
+
+```python
+MATERIAL_ID = "mp-2723"
+RADIATION_SOURCE = "CuKa"
+```
+
+the output file is:
+
+```text
+data/download/IrO2_xrd_pattern_mp-2723.csv
+```
+
+The CSV columns are:
+
+- `material_id`: Materials Project ID, such as `mp-2723`
+- `formula`: reduced chemical formula, such as `IrO2`
+- `radiation_source`: X-ray source passed to `XRDCalculator`
+- `wavelength_angstrom`: wavelength resolved by `XRDCalculator`
+- `two_theta`: simulated 2theta diffraction angle in degrees
+- `intensity`: relative peak intensity
+- `d_spacing_angstrom`: interplanar spacing for the HKL peak
+- `hkls`: Miller indices assigned to the peak
+
+Example:
+
+```text
+material_id,formula,radiation_source,wavelength_angstrom,two_theta,intensity,d_spacing_angstrom,hkls
+mp-2723,IrO2,CuKa,1.54184,28.00816418028475,100.0,3.1857379888508084,"(1, 1, 0)"
+```
 
 ## Notes
-- Requires a valid Materials Project API key
-- Currently configured for material ID: mp-2723 (Example structure)
-- Uses conventional structure representation for accurate peak indexing
+- A valid Materials Project API key is required.
+- The API key is currently provided directly in `Material_project.py`.
+- Output files are written to `data/download/`.
+- `data/` is ignored by Git, so generated CSV files are not committed by default.
