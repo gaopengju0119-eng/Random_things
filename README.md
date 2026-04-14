@@ -46,7 +46,7 @@ conda env create -f environment.yml
 Activate the environment:
 
 ```powershell
-conda activate random_things
+conda activate random-things
 ```
 
 If the environment already exists, update it with:
@@ -65,7 +65,7 @@ python Material_project.py
 Or run it without activating the environment:
 
 ```powershell
-conda run -n random_things python Material_project.py
+conda run -n random-things python Material_project.py
 ```
 
 On Windows, if `conda run` reports a temporary-file access conflict, activate the environment first and then run `python Material_project.py`.

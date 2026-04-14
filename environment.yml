@@ -1,4 +1,4 @@
-name: random_things
+name: random-things
 channels:
   - conda-forge
 dependencies:
