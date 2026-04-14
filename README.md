@@ -10,10 +10,10 @@ The main settings are defined near the top of `Material_project.py`:
 
 ```python
 RADIATION_SOURCE = "CuKa"
-MATERIAL_ID = "mp-2723"
+MATERIAL_IDS = ["mp-2723"]
 ```
 
-- `MATERIAL_ID` controls which Materials Project structure is downloaded.
+- `MATERIAL_IDS` controls which Materials Project structures are downloaded. Add more IDs to export multiple XRD patterns in one run.
 - `RADIATION_SOURCE` controls the X-ray source used by `XRDCalculator`.
 - For `"CuKa"`, `pymatgen` resolves the wavelength internally as `1.54184` angstrom.
 - A custom numeric wavelength can also be passed to `XRDCalculator` if needed.
@@ -25,6 +25,7 @@ MATERIAL_ID = "mp-2723"
 - Uses `pattern.d_hkls` from `XRDCalculator` for d-spacing values.
 - Exports material ID, formula, radiation source, wavelength, 2theta, intensity, d-spacing, and HKL labels to CSV.
 - Names the output CSV using both the chemical formula and Materials Project ID.
+- Prints the same XRD peak information to the console after saving each CSV file.
 
 ## Project Structure
 ```text
@@ -52,7 +53,7 @@ conda activate random_things
 If the environment already exists, update it with:
 
 ```powershell
-conda env update -f environment.yml --prune
+conda env update -n random_things --file environment.yml --prune
 ```
 
 ## Usage
@@ -70,11 +71,23 @@ conda run -n random_things python Material_project.py
 
 On Windows, if `conda run` reports a temporary-file access conflict, activate the environment first and then run `python Material_project.py`.
 
+To export a different material, edit `MATERIAL_IDS` in `Material_project.py`:
+
+```python
+MATERIAL_IDS = ["mp-101"]
+```
+
+To export multiple materials in one run:
+
+```python
+MATERIAL_IDS = ["mp-2723", "mp-101"]
+```
+
 ## Output
 For the current configuration:
 
 ```python
-MATERIAL_ID = "mp-2723"
+MATERIAL_IDS = ["mp-2723"]
 RADIATION_SOURCE = "CuKa"
 ```
 
@@ -100,6 +113,20 @@ Example:
 ```text
 material_id,formula,radiation_source,wavelength_angstrom,two_theta,intensity,d_spacing_angstrom,hkls
 mp-2723,IrO2,CuKa,1.54184,28.00816418028475,100.0,3.1857379888508084,"(1, 1, 0)"
+```
+
+The script also prints the same peak information in the terminal:
+
+```text
+Material ID: mp-2723
+Formula: IrO2
+Radiation source: CuKa
+Wavelength (angstrom): 1.54184
+XRD pattern saved to: data/download/IrO2_xrd_pattern_mp-2723.csv
+
+   two_theta     intensity     d_spacing  hkls
+----------------------------------------------------------
+   28.008164    100.000000      3.185738  (1, 1, 0)
 ```
 
 ## Notes
